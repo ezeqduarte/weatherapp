@@ -9,8 +9,23 @@ const getCurrentLocation = (setLatitude, setLongitude) => {
   }
 };
 
+function getDay(date) {
+    const diasDeLaSemana = [
+      "domingo",
+      "lunes",
+      "martes",
+      "miércoles",
+      "jueves",
+      "viernes",
+      "sábado",
+    ];
+    const newDate = new Date(date);
+    const dia = newDate.getDay();
+    return diasDeLaSemana[dia].slice(0,3);
+  }
+
 const functions = {
-  getCurrentLocation,
+  getCurrentLocation, getDay
 };
 
 export default functions;
