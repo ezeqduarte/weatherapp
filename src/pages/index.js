@@ -1,40 +1,63 @@
-import { Inter } from "next/font/google";
-const inter = Inter({ subsets: ["latin"] });
 import { useEffect, useState } from "react";
 import { api } from "./api/api";
+import functions from "@/functions/functions";
 import axios from "axios";
 
-console.log(process.env.NEXT_PUBLIC_SECRET_KEY);
-
 export default function Home() {
-  const { current_local: petition_local } = api;
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [data, setData] = useState({});
 
-  const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setLatitude(position.coords.latitude);
-        setLongitude(position.coords.longitude);
-      });
-    } else {
-      console.log("Geolocation is not supported by this browser.");
-    }
-  };
+  const { current_local: petition_local } = api;
+  const { getCurrentLocation } = functions;
+  const { location, current, forecast } = data;
 
   useEffect(() => {
-    getCurrentLocation();
+    getCurrentLocation(setLatitude, setLongitude);
     axios.get(`${petition_local}`).then((response) => setData(response.data));
   }, []);
 
-  console.log(latitude, longitude, data);
+  console.log(data);
 
   return (
-    <main
-      className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
-    >
-      <p>Hola soy un parrafo</p>
-    </main>
+    <>
+      {data.location ? (
+        /*  el main es toda mi ventana del navegador */
+        <main
+          className={`flex h-screen w-screen flex items-center justify-center p-12 font-sans`}
+        >
+          {/* este div es mi celular */}
+
+          <div className="w-96 h-full p-5 border rounded">
+            {/* header */}
+
+            <header className="w-100 bg-white pt-5 mb-5">
+              <h1 className="text-5xl font-bold truncate">{location.name}</h1>
+              <span className="text-3xl truncate font-thin italic font-bold">
+                {location.region}, {location.country}
+              </span>
+            </header>
+            {/* primer div con informacion del clima */}
+            <div className=" rounded p-5 bg-sky-50 ">
+              <div className="flex">
+                <h2 className="text-5xl font-extrabold border-r-2 pr-3">
+                  {current.temp_c}º
+                </h2>
+                <div className="pl-3 text-medium">
+                  <p>{current.temp_c}º</p>
+                  <p>{current.temp_c}º</p>
+                </div>
+              </div>
+              <div className="flex w-8 items-center">
+                <p>{current.condition.text}</p>
+                <img src={current.condition.icon}></img>
+              </div>
+            </div>
+          </div>
+        </main>
+      ) : (
+        <p>Loading... </p>
+      )}
+    </>
   );
 }
