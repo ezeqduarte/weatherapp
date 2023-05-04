@@ -8,7 +8,7 @@ export default function Home() {
   const [longitude, setLongitude] = useState(null);
   const [data, setData] = useState({});
 
-  const { current_local: petition_local } = api;
+  const { current_local: petition_local, forecastPetition } = api;
   const {
     getCurrentLocation,
     getDay,
@@ -20,8 +20,13 @@ export default function Home() {
 
   useEffect(() => {
     getCurrentLocation(setLatitude, setLongitude);
-    axios.get(`${petition_local}`).then((response) => setData(response.data));
-  }, []);
+    const key = process.env.SECRET_KEY;
+    axios
+      .get(
+        `http://api.weatherapi.com/v1/forecast.json?key=6b98bbacbba246a98be172015230305&q=${latitude},${longitude}&aqi=yes&alerts=yes&days=7`
+      )
+      .then((response) => setData(response.data));
+  }, [latitude, longitude]);
 
   console.log(data);
 
@@ -37,12 +42,46 @@ export default function Home() {
           <div className="celphone relative w-128 bg-white overflow-auto shadow-2xl h-full p-5 border rounded">
             {/* barra del celular */}
             <div className="flex justify-between bg-blue-200 absolute top-0 left-0 px-2 w-full bg-gray-100">
-              <div>
+              <div className="flex items-center justify-center gap-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon icon-tabler icon-tabler-clock"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="#2c3e50"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <circle cx="12" cy="12" r="9" />
+                  <polyline points="12 7 12 12 15 15" />
+                </svg>
                 <p className="text-gray-400 font-semibold">
-                  {current.last_updated.slice(10, 16)}
+                  {location.localtime.slice(11, 16)}
                 </p>
               </div>
-              <div>
+              <div className="flex items-center justify-center ">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="icon rotate-[270deg]  icon-tabler icon-tabler-battery-3"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="#2c3e50"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M6 7h11a2 2 0 0 1 2 2v.5a0.5 .5 0 0 0 .5 .5a0.5 .5 0 0 1 .5 .5v3a0.5 .5 0 0 1 -.5 .5a0.5 .5 0 0 0 -.5 .5v.5a2 2 0 0 1 -2 2h-11a2 2 0 0 1 -2 -2v-6a2 2 0 0 1 2 -2" />
+                  <line x1="7" y1="10" x2="7" y2="14" />
+                  <line x1="10" y1="10" x2="10" y2="14" />
+                  <line x1="13" y1="10" x2="13" y2="14" />
+                </svg>
                 <p className="text-gray-400 font-semibold">72%</p>
               </div>
             </div>
@@ -69,8 +108,8 @@ export default function Home() {
                   {current.temp_c}º
                 </h2>
                 <div className="pl-3 flex flex-col font-semibold justify-between text-lg">
-                  <p>Max temp {current.temp_c}º</p>
-                  <p>Min temp {current.temp_c}º</p>
+                  <p>Max temp {forecast.forecastday[0].day.maxtemp_c}º</p>
+                  <p>Min temp {forecast.forecastday[0].day.mintemp_c}º</p>
                 </div>
               </div>
               <div className="flex items-center">
@@ -98,21 +137,64 @@ export default function Home() {
                 ))}
               </div>
               <div className="w-full text-sky-900  gap-3 mt-3 flex">
-                <div className=" rounded mx-1 bg-white flex flex-col items-center justify-center w-full">
-                  <p className=" font-semibold text-xl">
-                    H {current.humidity}%
-                  </p>
-                  <img className="w-10"></img>
+                <div className=" rounded mx-1 bg-white flex items-center justify-center w-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="icon icon-tabler icon-tabler-droplet"
+                    width="30"
+                    height="30"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="#2c3e50"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M6.8 11a6 6 0 1 0 10.396 0l-5.197 -8l-5.2 8z" />
+                  </svg>
+                  <p className=" font-semibold text-xl">{current.humidity}%</p>
                 </div>
-                <div className=" rounded mx-1 bg-white flex flex-col items-center justify-center w-full">
+                <div className=" rounded gap-1 mx-1 bg-white flex items-center justify-center w-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="icon icon-tabler icon-tabler-cloud-rain"
+                    width="30"
+                    height="30"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="#2c3e50"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7" />
+                    <path d="M11 13v2m0 3v2m4 -5v2m0 3v2" />
+                  </svg>
                   <p className=" font-semibold text-xl">
-                    P {current.precip_mm} mmHg
+                    {current.precip_mm} mmHg
                   </p>
-                  <img className="w-10"></img>
                 </div>
-                <div className="py-2 rounded mx-1 bg-white flex flex-col items-center justify-center w-full">
-                  <p className=" font-semibold text-xl">UV {current.uv}</p>
-                  <img className="w-10"></img>
+                <div className="py-2 rounded mx-1 gap-1 bg-white flex items-center justify-center w-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="icon icon-tabler icon-tabler-sunrise"
+                    width="30"
+                    height="30"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="#2c3e50"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M3 17h1m16 0h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7m-9.7 5.7a4 4 0 0 1 8 0" />
+                    <line x1="3" y1="21" x2="21" y2="21" />
+                    <path d="M12 9v-6l3 3m-6 0l3 -3" />
+                  </svg>
+                  <p className=" font-semibold text-xl"> {current.uv} UV</p>
                 </div>
               </div>
             </div>
@@ -125,9 +207,16 @@ export default function Home() {
                 {getMonth(current.last_updated.slice(5, 7))}
               </h2>
               <p>Updated now</p>
-              <div className="flex flex-col gap-3 mt-3">
+              <div className="flex flex-col gap-3">
+                <div className="grid px-3 mt-3 justify-items-center grid-cols-5 ">
+                  <p>Hora</p>
+                  <p>Clima</p>
+                  <p>ºC</p>
+                  <p>H</p>
+                  <p>Viento</p>
+                </div>
                 {getConditionsSem(17, forecast.forecastday).map((hour) => (
-                  <div className="flex w-100 items-center justify-between bg-white">
+                  <div className="grid items-center justify-center grid-cols-5 px-3 py-2 w-100 justify-items-center bg-white">
                     <p>{getInfoHours(hour.time.slice(10, 13))}</p>
 
                     <img className="w-8" src={hour.condition.icon}></img>
@@ -139,16 +228,46 @@ export default function Home() {
               </div>
             </div>
             <hr className="my-5"></hr>
-            <div className="w-full font-thin  flex justify-around bg-gray-100 h-10">
+            <div className="w-full font-thin  flex justify-around ">
               <a className="flex cursor-pointer w-1/2  hover:font-semibold flex-col items-center justify-center">
-                <img className="w-8 " src={current.condition.icon} />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon icon-tabler icon-tabler-cloud-snow"
+                  width="30"
+                  height="30"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="#2c3e50"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7" />
+                  <path d="M11 15v.01m0 3v.01m0 3v.01m4 -4v.01m0 3v.01" />
+                </svg>
                 <p>Weather API</p>
               </a>
               <a className="flex w-50 w-1/2 cursor-pointer hover:font-semibold flex-col items-center justify-center">
-                <img className="w-8 " src={current.condition.icon} />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon icon-tabler icon-tabler-brand-github"
+                  width="30"
+                  height="30"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="#2c3e50"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+                </svg>
                 <p>Github</p>
               </a>
             </div>
+            {}
           </div>
         </main>
       ) : (
