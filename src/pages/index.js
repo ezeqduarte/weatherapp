@@ -130,16 +130,24 @@ export default function Home() {
                   <div className="flex w-100 items-center justify-between bg-white">
                     <p>{getInfoHours(hour.time.slice(10, 13))}</p>
 
-                    <img
-                      className="w-8 ml-1"
-                      src={current.condition.icon}
-                    ></img>
-                    <p>31º</p>
-                    <p>0%</p>
-                    <p>22.2 km/h</p>
+                    <img className="w-8" src={hour.condition.icon}></img>
+                    <p>{hour.temp_c}</p>
+                    <p>{hour.humidity}%</p>
+                    <p>{hour.wind_kph} km/h</p>
                   </div>
                 ))}
               </div>
+            </div>
+            <hr className="my-5"></hr>
+            <div className="w-full font-thin  flex justify-around bg-gray-100 h-10">
+              <a className="flex cursor-pointer w-1/2  hover:font-semibold flex-col items-center justify-center">
+                <img className="w-8 " src={current.condition.icon} />
+                <p>Weather API</p>
+              </a>
+              <a className="flex w-50 w-1/2 cursor-pointer hover:font-semibold flex-col items-center justify-center">
+                <img className="w-8 " src={current.condition.icon} />
+                <p>Github</p>
+              </a>
             </div>
           </div>
         </main>
