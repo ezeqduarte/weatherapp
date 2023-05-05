@@ -54,17 +54,17 @@ function getInfoHours(hour) {
   }
 }
 
-function getConditionsSem(actuallyHour, array) {
-  const arrayOfConditions = array[0].hour.filter(
-    (hours, index) => index >= actuallyHour
+function getConditionsSem(actuallyHour, forecastArray) {
+  let arrayOfConditions = forecastArray[0].hour.slice(
+    actuallyHour,
+    Number(actuallyHour) + 12
   );
 
   if (arrayOfConditions.length < 12) {
-    array[1].hour.map((hour) => {
-      if (arrayOfConditions.length < 12) {
-        arrayOfConditions.push(hour);
-      }
-    });
+    arrayOfConditions = [
+      ...arrayOfConditions,
+      ...forecastArray[1].hour.slice(0, 12 - arrayOfConditions.length),
+    ];
   }
 
   console.log(arrayOfConditions);

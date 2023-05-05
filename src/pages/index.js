@@ -215,7 +215,7 @@ export default function Home() {
                   <p>H</p>
                   <p>Viento</p>
                 </div>
-                {getConditionsSem(17, forecast.forecastday).map((hour) => (
+                {getConditionsSem(location.localtime.slice(11, 13), forecast.forecastday).map((hour) => (
                   <div className="grid items-center justify-center grid-cols-5 px-3 py-2 w-100 justify-items-center bg-white">
                     <p>{getInfoHours(hour.time.slice(10, 13))}</p>
 
