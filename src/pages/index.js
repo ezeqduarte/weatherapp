@@ -3,6 +3,7 @@ import { api } from "./api/api";
 import functions from "@/functions/functions";
 import axios from "axios";
 import Navbar from "@/components/navbar";
+import Header from "@/components/Header";
 
 export default function Home() {
   const [latitude, setLatitude] = useState(null);
@@ -24,7 +25,6 @@ export default function Home() {
 
   useEffect(() => {
     getCurrentLocation(setLatitude, setLongitude);
-    const key = process.env.SECRET_KEY;
     axios
       .get(
         `${forecastPetition}&q=${latitude},${longitude}&aqi=yes&alerts=yes&days=7`
@@ -32,7 +32,7 @@ export default function Home() {
       .then((response) => setData(response.data));
   }, [latitude, longitude]);
 
-  console.log(data);
+  /* console.log(data); */
 
   return (
     <>
@@ -47,10 +47,11 @@ export default function Home() {
             {/* barra del celular */}
 
             <Navbar actuallyHour={actuallyHour} />
-            
+
             {/* header */}
 
-            
+            <Header location={location} current={current}></Header>
+
             {/* primer div con informacion del clima */}
             <div className=" rounded px-5 py-8 bg-sky-50 ">
               <div className="flex items-center">
