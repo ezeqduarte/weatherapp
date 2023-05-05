@@ -11,13 +11,13 @@ const getCurrentLocation = (setLatitude, setLongitude) => {
 
 function getDay(date) {
   const diasDeLaSemana = [
-    "Domingo",
-    "Lunes",
     "Martes",
     "Miércoles",
     "Jueves",
     "Viernes",
     "Sábado",
+    "Domingo",
+    "Lunes",
   ];
   const newDate = new Date(date);
   const dia = newDate.getDay();
@@ -49,6 +49,7 @@ function getInfoHours(hour) {
   if (0 <= hour && hour < 12) {
     return `${hour} AM`;
   }
+
   if (12 <= hour && hour < 24) {
     return `${hour} PM`;
   }
@@ -57,13 +58,13 @@ function getInfoHours(hour) {
 function getConditionsSem(actuallyHour, forecastArray) {
   let arrayOfConditions = forecastArray[0].hour.slice(
     actuallyHour,
-    Number(actuallyHour) + 12
+    Number(actuallyHour) + 13
   );
 
-  if (arrayOfConditions.length < 12) {
+  if (arrayOfConditions.length < 13) {
     arrayOfConditions = [
       ...arrayOfConditions,
-      ...forecastArray[1].hour.slice(0, 12 - arrayOfConditions.length),
+      ...forecastArray[1].hour.slice(0, 13 - arrayOfConditions.length),
     ];
   }
 

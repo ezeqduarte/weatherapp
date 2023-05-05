@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { api } from "./api/api";
 import functions from "@/functions/functions";
 import axios from "axios";
+import Navbar from "@/components/navbar";
 
 export default function Home() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [data, setData] = useState({});
 
-  const { current_local: petition_local, forecastPetition } = api;
   const {
     getCurrentLocation,
     getDay,
@@ -16,14 +16,18 @@ export default function Home() {
     getInfoHours,
     getConditionsSem,
   } = functions;
+
+  const { forecastPetition } = api;
   const { location, current, forecast } = data;
+
+  const actuallyHour = location?.localtime;
 
   useEffect(() => {
     getCurrentLocation(setLatitude, setLongitude);
     const key = process.env.SECRET_KEY;
     axios
       .get(
-        `http://api.weatherapi.com/v1/forecast.json?key=6b98bbacbba246a98be172015230305&q=${latitude},${longitude}&aqi=yes&alerts=yes&days=7`
+        `${forecastPetition}&q=${latitude},${longitude}&aqi=yes&alerts=yes&days=7`
       )
       .then((response) => setData(response.data));
   }, [latitude, longitude]);
@@ -41,86 +45,35 @@ export default function Home() {
 
           <div className="celphone relative w-128 bg-white overflow-auto shadow-2xl h-full p-5 border rounded">
             {/* barra del celular */}
-            <div className="flex justify-between bg-blue-200 absolute top-0 left-0 px-2 w-full bg-gray-100">
-              <div className="flex items-center justify-center gap-1">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="icon icon-tabler icon-tabler-clock"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="#2c3e50"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <circle cx="12" cy="12" r="9" />
-                  <polyline points="12 7 12 12 15 15" />
-                </svg>
-                <p className="text-gray-400 font-semibold">
-                  {location.localtime.slice(11, 16)}
-                </p>
-              </div>
-              <div className="flex items-center justify-center ">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="icon rotate-[270deg]  icon-tabler icon-tabler-battery-3"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="#2c3e50"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M6 7h11a2 2 0 0 1 2 2v.5a0.5 .5 0 0 0 .5 .5a0.5 .5 0 0 1 .5 .5v3a0.5 .5 0 0 1 -.5 .5a0.5 .5 0 0 0 -.5 .5v.5a2 2 0 0 1 -2 2h-11a2 2 0 0 1 -2 -2v-6a2 2 0 0 1 2 -2" />
-                  <line x1="7" y1="10" x2="7" y2="14" />
-                  <line x1="10" y1="10" x2="10" y2="14" />
-                  <line x1="13" y1="10" x2="13" y2="14" />
-                </svg>
-                <p className="text-gray-400 font-semibold">72%</p>
-              </div>
-            </div>
+
+            <Navbar actuallyHour={actuallyHour} />
+            
             {/* header */}
 
-            <header className="w-100 mt-5 text-end bg-white pt-5 mb-5">
-              <h1 className="text-5xl font-bold truncate">{location.name}</h1>
-              <span className="text-3xl truncate font-thin italic font-bold">
-                {location.region}, {location.country}
-              </span>
-              <p className="truncate font-thin font-bold">
-                Last updated:
-                {` `}
-                {getDay(current.is_day)} {current.last_updated.slice(8, 10)} de{" "}
-                {``}
-                {getMonth(current.last_updated.slice(5, 7))}
-                {current.last_updated.slice(10, 16)}
-              </p>
-            </header>
+            
             {/* primer div con informacion del clima */}
             <div className=" rounded px-5 py-8 bg-sky-50 ">
               <div className="flex items-center">
                 <h2 className="text-7xl font-extrabold border-r-2 pr-3">
-                  {current.temp_c}º
+                  {
+                    forecast.forecastday[0].hour[actuallyHour.slice(11, 13)]
+                      .temp_c
+                  }
+                  º
                 </h2>
                 <div className="pl-3 flex flex-col font-semibold justify-between text-lg">
                   <p>Max temp {forecast.forecastday[0].day.maxtemp_c}º</p>
                   <p>Min temp {forecast.forecastday[0].day.mintemp_c}º</p>
                 </div>
               </div>
-              <div className="flex items-center">
-                <p className="mt-1 italic">{current.condition.text} </p>
-                <img className="w-8 ml-1" src={current.condition.icon}></img>
+              <div className="flex mt-3 items-center">
+                <p className=" italic">{current.condition.text} </p>
+                <img className="w-8 ml-2" src={current.condition.icon}></img>
               </div>
               <p className="italic">Feels like: {current.feelslike_c}º</p>
               <p className="italic">
                 Air quality: {current.air_quality["us-epa-index"]}
               </p>
-              <p className="italic">Yellow warning for storms </p>
               <hr className="my-5"></hr>
               <div className="w-full flex">
                 {forecast.forecastday.map((day) => (
@@ -202,9 +155,13 @@ export default function Home() {
             {/* segundo div con informacion del clima */}
             <div className=" rounded px-5 py-8 mt-5 bg-sky-50 ">
               <h2 className="uppercase text-xl font-semibold">
-                {getDay(current.is_day)}, {current.last_updated.slice(8, 10)} de{" "}
-                {` `}
-                {getMonth(current.last_updated.slice(5, 7))}
+                The history up to {getInfoHours(actuallyHour.slice(11, 13))} at{" "}
+                {getInfoHours(
+                  getConditionsSem(
+                    actuallyHour.slice(11, 13),
+                    forecast.forecastday
+                  )[12].time.slice(11, 13)
+                )}
               </h2>
               <p>Updated now</p>
               <div className="flex flex-col gap-3">
@@ -215,7 +172,10 @@ export default function Home() {
                   <p>H</p>
                   <p>Viento</p>
                 </div>
-                {getConditionsSem(location.localtime.slice(11, 13), forecast.forecastday).map((hour) => (
+                {getConditionsSem(
+                  actuallyHour.slice(11, 13),
+                  forecast.forecastday
+                ).map((hour) => (
                   <div className="grid items-center justify-center grid-cols-5 px-3 py-2 w-100 justify-items-center bg-white">
                     <p>{getInfoHours(hour.time.slice(10, 13))}</p>
 
@@ -229,7 +189,11 @@ export default function Home() {
             </div>
             <hr className="my-5"></hr>
             <div className="w-full font-thin  flex justify-around ">
-              <a className="flex cursor-pointer w-1/2  hover:font-semibold flex-col items-center justify-center">
+              <a
+                href="https://www.weatherapi.com/"
+                target="_blank"
+                className="flex cursor-pointer w-1/2  hover:font-semibold flex-col items-center justify-center"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   class="icon icon-tabler icon-tabler-cloud-snow"
@@ -248,7 +212,11 @@ export default function Home() {
                 </svg>
                 <p>Weather API</p>
               </a>
-              <a className="flex w-50 w-1/2 cursor-pointer hover:font-semibold flex-col items-center justify-center">
+              <a
+                href="https://github.com/ezeqduarte/weatherapp"
+                target="_blank"
+                className="flex w-50 w-1/2 cursor-pointer hover:font-semibold flex-col items-center justify-center"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   class="icon icon-tabler icon-tabler-brand-github"
@@ -271,7 +239,11 @@ export default function Home() {
           </div>
         </main>
       ) : (
-        <p>Loading... </p>
+        <main
+          className={`flex bg-gradient-to-r from-cyan-500 to-blue-400 h-screen w-screen flex items-center justify-center p-12 font-sans`}
+        >
+          <p>Loading... </p>
+        </main>
       )}
     </>
   );
