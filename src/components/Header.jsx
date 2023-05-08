@@ -1,4 +1,3 @@
-import React from "react";
 import functions from "@/functions/functions";
 
 const { getDay, getMonth } = functions;

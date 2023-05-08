@@ -1,6 +1,4 @@
-import React from "react";
-
-export default function Navbar({ actuallyHour }) {
+export function NavBar({ location }) {
   return (
     <div className="flex justify-between bg-blue-200 absolute top-0 left-0 px-2 w-full bg-gray-100">
       <div className="flex items-center justify-center gap-1">
@@ -21,7 +19,7 @@ export default function Navbar({ actuallyHour }) {
           <polyline points="12 7 12 12 15 15" />
         </svg>
         <p className="text-gray-400 font-semibold">
-          {actuallyHour.slice(11, 16)}
+          {location.localtime.slice(11, 16)}
         </p>
       </div>
       <div className="flex items-center justify-center ">
